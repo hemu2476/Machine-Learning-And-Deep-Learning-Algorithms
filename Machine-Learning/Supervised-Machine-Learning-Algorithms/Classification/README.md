@@ -12,8 +12,6 @@
 4. [Real-World Example](#4-real-world-example)
 5. [Worked K-NN Sum (Step-by-Step)](#5-worked-k-nn-sum-step-by-step)
 6. [Program Flowchart](#6-program-flowchart)
-7. [Project Structure](#7-project-structure)
-8. [How to Run](#8-how-to-run)
 
 ---
 
@@ -465,7 +463,7 @@ main.py
   +-- config.py          (PipelineConfig, PathConfig, DataConfig,
   |                        ModelConfig, LoggingConfig)
   |
-  +-- logger.py          (LoggerFactory - console + file handlers)
+  +-- logger.py          (LoggerFactory - console)
   |
   +-- data_loader.py     (DataLoaderService - load, validate,
   |                        preprocess, split)
