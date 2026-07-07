@@ -47,7 +47,7 @@ class PathConfig:
         object.__setattr__(
             self,
             "dataset_file",
-            os.path.join(self.project_root, "data", "ai_student_impact_dataset.csv"),
+            os.path.join(self.project_root, "data", "ai_student_impact_dataset (1).csv"),
         )
 
 
@@ -61,6 +61,7 @@ class DataConfig:
         test_size:          Fraction of data reserved for test evaluation.
         random_state:       Seed for reproducible train/test splits.
         stratify:           Whether to use stratified splitting on the target.
+        max_samples:        Maximum number of samples to use (None for all).
     """
 
     target_column: str = "Burnout_Risk_Level"
@@ -79,6 +80,7 @@ class DataConfig:
     test_size: float = 0.20
     random_state: int = 42
     stratify: bool = True
+    max_samples: int = None
 
 
 @dataclass(frozen=True)
@@ -90,14 +92,16 @@ class ModelConfig:
         weights:       Weight function: 'uniform' or 'distance'.
         metric:        Distance metric for neighbor computation.
         algorithm:     Algorithm used to compute nearest neighbors.
-        n_jobs:        Number of parallel jobs (-1 uses all CPU cores).
+        n_jobs:        Number of parallel jobs (1 or None avoids Windows multiprocessing overhead).
+        device:        Target execution device: 'cpu', 'gpu', or 'auto'.
     """
 
     n_neighbors: int = 7
     weights: str = "distance"
     metric: str = "minkowski"
     algorithm: str = "auto"
-    n_jobs: int = -1
+    n_jobs: int = 1
+    device: str = "auto"
 
 
 @dataclass(frozen=True)

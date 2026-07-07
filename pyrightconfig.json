@@ -1,0 +1,8 @@
+{
+  "venvPath": ".",
+  "venv": ".venv",
+  "extraPaths": [
+    "Machine-Learning/Supervised-Machine-Learning-Algorithms/Classification/src"
+  ],
+  "reportMissingImports": "warning"
+}

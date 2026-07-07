@@ -85,6 +85,13 @@ class DataLoaderService:
         """
         dataframe = self._load_csv()
         self._validate_schema(dataframe)
+
+        # Why downsample here?
+        # Downsampling the dataset early in the pipeline (right after validation)
+        # reduces downstream processing time for summarize, preprocess, and
+        # model training, facilitating fast iteration during development.
+        dataframe = self._downsample(dataframe)
+
         self._log_data_summary(dataframe)
         features, target = self._preprocess(dataframe)
         return self._split(features, target)
@@ -144,6 +151,44 @@ class DataLoaderService:
             )
 
         self._logger.info("Schema validation passed.")
+
+    def _downsample(self, dataframe: pd.DataFrame) -> pd.DataFrame:
+        """Perform stratified downsampling to limit dataset size if configured.
+
+        Args:
+            dataframe: The raw DataFrame to downsample.
+
+        Returns:
+            A downsampled DataFrame with balanced class representation.
+        """
+        max_samples = self._data_config.max_samples
+        if max_samples is None or max_samples >= len(dataframe):
+            return dataframe
+
+        self._logger.info(
+            "Downsampling dataset from %d to %d samples...",
+            len(dataframe),
+            max_samples,
+        )
+
+        # Why perform stratified downsampling?
+        # Stratification ensures that the relative class frequencies in the target
+        # column remain consistent after downsampling. This prevents introducing
+        # class imbalance bias that could skew classifier evaluation metrics.
+        target = self._data_config.target_column
+        fraction = max_samples / len(dataframe)
+
+        downsampled = dataframe.groupby(target, group_keys=False).apply(
+            lambda x: x.sample(
+                n=int(np.round(len(x) * fraction)),
+                random_state=self._data_config.random_state
+            )
+        )
+
+        self._logger.info(
+            "Downsampling complete. New dataset shape: %s", downsampled.shape
+        )
+        return downsampled
 
     def _log_data_summary(self, dataframe: pd.DataFrame) -> None:
         """Log a detailed exploratory overview of the dataset.
